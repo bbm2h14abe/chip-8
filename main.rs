@@ -89,24 +89,30 @@ impl CPU
 	    1XXX - 7XXX
 	*/
 	// 1NNN - JP - Jump to location NNN
-	fn inst_1nnn(&mut self, x : u8){
+	fn inst_1nnn(&mut self, nnn : u16){
 	    
 	}
     // 2NNN - CALL - Call subroutine at NNN
-    fn inst_2nnn(&mut self, x : u8){
+    fn inst_2nnn(&mut self, nnn : u16){
 	    
 	}
     // 3XKK - SE - Skip next instruction if V[X] = KK
     fn inst_3xkk(&mut self, x : u8, kk : u8){
-	    if(self.v[x as usize] == kk){ self.pc += 2; }
+	    if self.v[x as usize] == kk { 
+	        self.pc += 2; 
+	    }
 	}
     // 4XKK - SNE - Skip next instruction if V[X] != KK
     fn inst_4xkk(&mut self, x : u8, kk : u8){
-	    if(self.v[x as usize] != kk){ self.pc += 2; }
+	    if self.v[x as usize] != kk {
+	        self.pc += 2; 
+	    }
 	}
     // 5XY0 - SE - Skip next instruction if V[X] = V[Y]
     fn inst_5xy0(&mut self, x : u8, y : u8){
-	    if(self.v[x as usize] == self.v[y as usize]){ self.pc += 2; }
+	    if self.v[x as usize] == self.v[y as usize] { 
+	        self.pc += 2; 
+	    }
 	}
     // 6XKK - LD - Set V[X] = KK
     fn inst_6xkk(&mut self, x : u8, kk : u8){
@@ -189,19 +195,19 @@ impl CPU
 	*/
 
      // 9XY0 - SNE - Skip next instruction if V[X] != V[Y]
-     fn inst_9xy0(&mut self){
+     fn inst_9xy0(&mut self, x : u8, y : u8){
      }
     // ANNN - LD - Set I = NNN
-    fn inst_annn(&mut self){
+    fn inst_annn(&mut self, nnn : u16){
      }
     // BNNN - JP - Jump to location NNN + V[0]
-    fn inst_bnnn(&mut self){
+    fn inst_bnnn(&mut self, nnn : u16){
      }
 	// CXKK - RND - Set V[X] = random byte AND KK
-	fn inst_cxkk(&mut self){
+	fn inst_cxkk(&mut self, x : u8, kk : u8){
      }
 	// DXYN - DRW - Draw n-byte sprite, start I at (V[X],V[Y]), V[F] = collision
-    fn inst_dxyn(&mut self){
+    fn inst_dxyn(&mut self, x : u8, y : u8, n : u8){
      }
 
 
@@ -209,11 +215,11 @@ impl CPU
         EXXX
     */
     // EX9E - SKP - Skip next instruction if key[V[X]] is pressed
-    fn inst_ex9e(&mut self){
+    fn inst_ex9e(&mut self, x : u8){
     
     }
     // EXA1 - SKNP - Skip next instruction if key[V[X]] is not pressed
-    fn inst_exa1(&mut self){
+    fn inst_exa1(&mut self, x : u8){
     
     }
 
@@ -294,11 +300,11 @@ impl CPU
 	            0xE => {println!("RET"); self.inst_00ee(); },	// 00EE - RET - Return from a subroutine
 	            _ => panic!("Cant find Opcode 0x{:0x}", opcode),
 	        },
-			0x1000 => {println!("JP"); self.inst_1nnn(x);}, 	// 1NNN - JP - Jump to location NNN
-			0x2000 => {println!("CALL"); self.inst_2nnn(x);}, // 2NNN - CALL - Call subroutine at NNN
+			0x1000 => {println!("JP"); self.inst_1nnn(nnn);}, 	// 1NNN - JP - Jump to location NNN
+			0x2000 => {println!("CALL"); self.inst_2nnn(nnn);}, // 2NNN - CALL - Call subroutine at NNN
 			0x3000 => {println!("SE"); self.inst_3xkk(x, kk); }, 	// 3XKK - SE - Skip next instruction if V[X] = KK
 			0x4000 => {println!("SNE"); self.inst_4xkk(x, kk); }, 	// 4XKK - SNE - Skip next instruction if V[X] != KK
-			0x5000 => {println!("SE"); self.inst_5xy0(x, kk); }, 	// 5XY0 - SE - Skip next instruction if V[X] = V[Y]
+			0x5000 => {println!("SE"); self.inst_5xy0(x, y); }, 	// 5XY0 - SE - Skip next instruction if V[X] = V[Y]
 			0x6000 => {println!("LD"); self.inst_6xkk(x, kk); }, 	// 6XKK - LD - Set V[X] = KK
 			0x7000 => {println!("ADD"); self.inst_7xkk(x, kk); }, 	// 7XKK - ADD - Set V[X] = V[x] + KK
 			0x8000 => match opcode & 0xF
@@ -314,15 +320,15 @@ impl CPU
 				0xE => {println!("SHL");	self.inst_8xye(x, y); }, // 8XYE - SHL - Set V[X] = V[X] SHL 1
 				_ => panic!("Cant find Opcode 0x{:0x}", opcode),
 			},
-			0x9000 => {println!("SNE"); self.inst_9xy0(); }, 	// 9XY0 - SNE - Skip next instruction if V[X] != V[Y]
-			0xA000 => {println!("LD"); self.inst_annn(); },	// ANNN - LD - Set I = NNN
-			0xB000 => {println!("JP"); self.inst_bnnn(); },	// BNNN - JP - Jump to location NNN + V[0]
-			0xC000 => {println!("RND"); self.inst_cxkk(); },	// CXKK - RND - Set V[X] = random byte AND KK
-			0xD000 => {println!("DRW"); self.inst_dxyn(); },	// DXYN - DRW - Draw n-byte sprite, start I at (V[X],V[Y]), V[F] = collision
+			0x9000 => {println!("SNE"); self.inst_9xy0(x, y); }, 	// 9XY0 - SNE - Skip next instruction if V[X] != V[Y]
+			0xA000 => {println!("LD"); self.inst_annn(nnn); },	// ANNN - LD - Set I = NNN
+			0xB000 => {println!("JP"); self.inst_bnnn(nnn); },	// BNNN - JP - Jump to location NNN + V[0]
+			0xC000 => {println!("RND"); self.inst_cxkk(x, kk); },	// CXKK - RND - Set V[X] = random byte AND KK
+			0xD000 => {println!("DRW"); self.inst_dxyn(x, y, n); },	// DXYN - DRW - Draw n-byte sprite, start I at (V[X],V[Y]), V[F] = collision
 			0xE000 => match opcode & 0xFF
 			{	// Check lowest 8 bits
-				0x9E => {println!("SKP"); self.inst_ex9e(); },	// EX9E - SKP - Skip next instruction if key[V[X]] is pressed
-				0xA1 => {println!("SKNP"); self.inst_exa1(); },	// EXA1 - SKNP - Skip next instruction if key[V[X]] is not pressed
+				0x9E => {println!("SKP"); self.inst_ex9e(x); },	// EX9E - SKP - Skip next instruction if key[V[X]] is pressed
+				0xA1 => {println!("SKNP"); self.inst_exa1(x); },	// EXA1 - SKNP - Skip next instruction if key[V[X]] is not pressed
 				 _ => panic!("Cant find Opcode 0x{:0x}", opcode),
 			},
 			0xF000 => match opcode & 0xFF
