@@ -80,6 +80,8 @@ impl CPU
 	// 00EE - RET - Return from a subroutine
 	fn inst_00ee(&mut self){
 	    println!("inst_00ee");
+	    self.pc = self.stack[self.sp as usize];
+	    self.sp -= 1;
 	}
 
 /*
@@ -196,9 +198,13 @@ impl CPU
 
      // 9XY0 - SNE - Skip next instruction if V[X] != V[Y]
      fn inst_9xy0(&mut self, x : u8, y : u8){
+        if self.v[x as usize] != self.v[y as usize] {
+            self.pc += 2;
+        }
      }
     // ANNN - LD - Set I = NNN
     fn inst_annn(&mut self, nnn : u16){
+        self.i = nnn;
      }
     // BNNN - JP - Jump to location NNN + V[0]
     fn inst_bnnn(&mut self, nnn : u16){
@@ -216,7 +222,7 @@ impl CPU
     */
     // EX9E - SKP - Skip next instruction if key[V[X]] is pressed
     fn inst_ex9e(&mut self, x : u8){
-    
+        
     }
     // EXA1 - SKNP - Skip next instruction if key[V[X]] is not pressed
     fn inst_exa1(&mut self, x : u8){
