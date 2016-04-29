@@ -95,6 +95,7 @@ impl CPU
 		// TODO
 		for y in 0..H{
 			for x in 0..W{
+				// difficult !
 				if (self.display[y * W + x] & (0x80 >> x)) == 0{
 					print!(".");
 				}else{
